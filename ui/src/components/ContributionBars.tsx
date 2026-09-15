@@ -13,14 +13,30 @@ type Props = {
 export function ContributionBars({ rows, otherAuthors, otherCommits, otherShare, selected, onSelect }: Props) {
   if (!rows.length) return <p className="muted empty">No commits in this period.</p>
   const peak = Math.max(...rows.map((row) => row.share_percent), otherShare, 0.01)
-  const selectedKey = selected?.toLowerCase()
+  const selectedKey = selected ? selected.toLowerCase() : undefined
   const width = (share: number) => `${Math.max((share / peak) * 100, 0.8)}%`
 
   return (
     <ol className="share-list">
       {rows.map((row) => {
-        const isSelected = selectedKey === row.email.toLowerCase()
-        const dimmed = Boolean(selectedKey) && !isSelected
+        const isSelected = selectedKey !== undefined && selectedKey === row.email.toLowerCase()
+        const dimmed = selectedKey !== undefined && !isSelected
+        if (!row.email) {
+          return (
+            <li key={`name:${row.name}`}>
+              <div className="share-row is-static" title="No e-mail recorded in commits; cannot filter by this author">
+                <span className="share-name">{row.name}</span>
+                <span className="share-track" aria-hidden="true">
+                  <span className={`share-fill${dimmed ? ' is-dim' : ''}`} style={{ width: width(row.share_percent) }} />
+                </span>
+                <span className="share-value">
+                  <strong>{formatPercent(row.share_percent)}</strong>
+                  <span className="muted">{formatCount(row.commits)}</span>
+                </span>
+              </div>
+            </li>
+          )
+        }
         return (
           <li key={row.email || row.name}>
             <button

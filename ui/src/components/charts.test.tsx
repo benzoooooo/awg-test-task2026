@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import type { TrendBucket } from '../api'
+import { AuthorFilter } from './AuthorFilter'
 import { ContributionBars } from './ContributionBars'
 import { Punchcard } from './Punchcard'
 import { TrendChart } from './TrendChart'
@@ -67,5 +68,34 @@ describe('ContributionBars', () => {
     )
     fireEvent.click(screen.getByRole('button', { name: /Bob/ }))
     expect(onSelect).toHaveBeenLastCalledWith(undefined)
+  })
+})
+
+describe('authors without e-mail', () => {
+  const rows = [
+    { name: 'Ada', email: 'ada@example.com', commits: 4, insertions: 0, deletions: 0, share_percent: 66.67 },
+    { name: 'No Mail', email: '', commits: 2, insertions: 0, deletions: 0, share_percent: 33.33 },
+  ]
+
+  it('are not shown as selected without a filter and are not clickable', () => {
+    const onSelect = vi.fn()
+    render(<ContributionBars rows={rows} otherAuthors={0} otherCommits={0} otherShare={0} selected="" onSelect={onSelect} />)
+    expect(screen.getAllByRole('button')).toHaveLength(1)
+    expect(screen.getByRole('button', { name: /Ada/ }).getAttribute('aria-pressed')).toBe('false')
+    expect(screen.getByText('No Mail')).toBeTruthy()
+  })
+
+  it('do not appear as the selected author in the filter', () => {
+    render(
+      <AuthorFilter
+        authors={[
+          { name: 'No Mail', email: '', commits: 2 },
+          { name: 'Ada', email: 'ada@example.com', commits: 4 },
+        ]}
+        value=""
+        onChange={vi.fn()}
+      />,
+    )
+    expect(screen.queryByText('No Mail')).toBeNull()
   })
 })
