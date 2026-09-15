@@ -50,6 +50,8 @@ If you have hosting — use it. If not — write [@mazazyrikbeats](https://t.me/
 
 ## Delivery (v0.2.0)
 
+**Live:** https://gitpulse.ddns.net/git/ (large repository: `django/django`).
+
 This fork implements the assignment: public URL cloning with a hardened git adapter,
 an author filter, and a contribution dashboard (share, core contributors, trend,
 activity by hour). Details, metric definitions, configuration, API, and known limits:
