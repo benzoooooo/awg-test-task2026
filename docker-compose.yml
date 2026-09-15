@@ -1,0 +1,17 @@
+services:
+  gitpulse:
+    build: .
+    image: awg-gitpulse:0.2.0
+    restart: unless-stopped
+    ports:
+      - '${GITPULSE_PORT:-8000}:8000'
+    environment:
+      GITPULSE_PRELOAD_URLS: ${GITPULSE_PRELOAD_URLS:-https://github.com/django/django}
+      GITPULSE_MAX_REPOS: ${GITPULSE_MAX_REPOS:-20}
+      GITPULSE_MAX_REPO_SIZE_MB: ${GITPULSE_MAX_REPO_SIZE_MB:-1536}
+      GITPULSE_ALLOWED_HOSTS: ${GITPULSE_ALLOWED_HOSTS:-}
+    volumes:
+      - gitpulse-data:/data
+
+volumes:
+  gitpulse-data:
