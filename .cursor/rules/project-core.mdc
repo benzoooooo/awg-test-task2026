@@ -1,0 +1,15 @@
+---
+description: Core repository and architecture rules
+alwaysApply: true
+---
+
+# Project core
+
+- `docs/vault` is the canonical source for product intent and architecture.
+- Keep the package embeddable: public API is `create_router`, `create_app`, and `mount_static_ui`.
+- Preserve host FastAPI conventions instead of forcing a new application shell.
+- Prefer clear, typed boundaries and small modules over framework-heavy abstractions.
+- Use single quotes where the language and formatter permit it.
+- Imports stay at the top of the file — never inside functions, classes, or conditionals.
+- Do not implement a feature until its acceptance criteria are traceable to the vault.
+- This public repository discloses only the git-analytics domain. Mentions of internal projects, products, infrastructure, or customers are forbidden.

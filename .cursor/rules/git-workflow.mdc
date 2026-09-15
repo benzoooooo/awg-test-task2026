@@ -1,0 +1,15 @@
+---
+description: Git branch and pull request workflow
+alwaysApply: true
+---
+
+# Git workflow
+
+- Product work branches start from `origin/dev`.
+- Use conventional branch names such as `feat/branch-list` or `fix/author-cache`.
+- Pull requests target `dev`.
+- The orphan `docs/vault` branch is updated only from its dedicated worktree.
+- Never merge `docs/vault` into `dev` or `main`.
+- Commit messages use Conventional Commits.
+- Never force-push or bypass hooks unless the maintainer explicitly asks.
+- `main` receives only release merges from `dev`.
