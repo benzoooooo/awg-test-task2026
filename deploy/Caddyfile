@@ -1,0 +1,18 @@
+# Public entrypoint: automatic HTTPS (Let's Encrypt via HTTP-01/TLS-ALPN) in front of GitPulse.
+# Requires GITPULSE_DOMAIN to resolve to this server and ports 80/443 to be reachable.
+{
+	email {$ACME_EMAIL}
+}
+
+{$GITPULSE_DOMAIN} {
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+
+	reverse_proxy gitpulse:8000
+}

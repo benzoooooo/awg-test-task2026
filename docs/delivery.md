@@ -89,12 +89,32 @@ If your resolver returns private addresses for public hosts (VPN or proxy with
 fake-IP DNS), start with `GITPULSE_BLOCK_PRIVATE_NETWORKS=false`. Never do this on a
 public server.
 
-Container:
+### Production (Docker + HTTPS)
 
-```bash
-docker compose up -d --build
-# http://<host>:8000/git/ — put TLS termination (Caddy, nginx, platform proxy) in front
-```
+`docker-compose.yml` runs GitPulse on an internal network behind Caddy, which obtains
+and renews a Let's Encrypt certificate automatically. Only Caddy publishes ports.
+
+1. Point a hostname at the server: an `A` record with the public IPv4 (for example a
+   free No-IP hostname; remove any stale `AAAA` record). Check with `dig +short <host>`.
+2. Open inbound TCP 80 and 443 (and UDP 443 for HTTP/3) in the firewall or security group.
+   Port 80 must stay open: the ACME challenge and HTTP→HTTPS redirect use it.
+3. Configure and start:
+
+   ```bash
+   git clone https://github.com/<owner>/awg-test-task2026.git && cd awg-test-task2026
+   cp .env.example .env   # set GITPULSE_DOMAIN and ACME_EMAIL
+   docker compose up -d --build
+   docker compose logs -f caddy   # "certificate obtained successfully"
+   ```
+
+4. Open `https://<host>/git/`. The pinned repository from `GITPULSE_PRELOAD_URLS` clones
+   in the background; its status is visible on the home page.
+
+Troubleshooting: ACME failures are almost always DNS not yet pointing to the server or
+port 80 blocked. Let's Encrypt rate-limits repeated failures, so fix DNS/ports before
+retrying (`docker compose restart caddy`). Certificates persist in the `caddy-data`
+volume; do not delete it between deploys. Free No-IP hostnames must be confirmed every
+30 days or they stop resolving.
 
 ## Known limits
 

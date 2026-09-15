@@ -1,10 +1,12 @@
+# Production stack: GitPulse behind Caddy with automatic HTTPS.
+# Copy .env.example to .env, set GITPULSE_DOMAIN and ACME_EMAIL, then `docker compose up -d --build`.
 services:
   gitpulse:
     build: .
     image: awg-gitpulse:0.2.0
     restart: unless-stopped
-    ports:
-      - '${GITPULSE_PORT:-8000}:8000'
+    expose:
+      - '8000'
     environment:
       GITPULSE_PRELOAD_URLS: ${GITPULSE_PRELOAD_URLS:-https://github.com/django/django}
       GITPULSE_MAX_REPOS: ${GITPULSE_MAX_REPOS:-20}
@@ -13,5 +15,24 @@ services:
     volumes:
       - gitpulse-data:/data
 
+  caddy:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    depends_on:
+      - gitpulse
+    ports:
+      - '80:80'
+      - '443:443'
+      - '443:443/udp'
+    environment:
+      GITPULSE_DOMAIN: ${GITPULSE_DOMAIN:?set GITPULSE_DOMAIN in .env, e.g. gitpulse.ddns.net}
+      ACME_EMAIL: ${ACME_EMAIL:?set ACME_EMAIL in .env for Let's Encrypt expiry notices}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
 volumes:
   gitpulse-data:
+  caddy-data:
+  caddy-config:
