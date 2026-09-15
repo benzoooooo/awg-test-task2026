@@ -1,0 +1,15 @@
+---
+description: Security rules for git access and packaging
+alwaysApply: true
+---
+
+# Security
+
+- Never commit credentials, tokens, private keys, or secret env files.
+- Invoke git only via argv lists — never `shell=True`.
+- Validate repository paths with `Path.resolve()` and reject traversal.
+- Resolve branch and ref names through `for-each-ref` before use.
+- Disable hooks for inspected repositories (`core.hooksPath=/dev/null`).
+- Apply timeouts and result size limits to every git invocation.
+- Do not expose full patches by default — commit messages and metadata only.
+- Candidate clone-from-URL work must validate schemes, reject `ext::` and custom upload-pack, enforce size and timeout limits, and isolate clones on disk.
