@@ -1,5 +1,8 @@
 # Delivery notes — v0.2.0
 
+**Live:** https://gitpulse.ddns.net/git/ — pinned large repository: `github.com/django/django`
+(deployed with `docker-compose.yml`: Caddy with Let's Encrypt in front of the `v0.2.0` image).
+
 What was built on top of the reference satellite library, how the metrics are
 defined, and where the limits are. Decisions are recorded on the `docs/vault`
 branch: `07-ADR/0003-remote-clone-isolation.md`,
