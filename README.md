@@ -48,7 +48,7 @@ If you have hosting — use it. If not — write [@mazazyrikbeats](https://t.me/
 | Agent harness | Useful `AGENTS.md` / rules; human vs agent split respected |
 | Delivery | Live URL + large repo demo |
 
-## Delivery (v0.2.0)
+## Delivery (v0.2.1)
 
 **Live:** https://gitpulse.ddns.net/git/ (large repository: `django/django`).
 
