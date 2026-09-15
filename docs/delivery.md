@@ -1,7 +1,7 @@
-# Delivery notes — v0.2.0
+# Delivery notes — v0.2.1
 
 **Live:** https://gitpulse.ddns.net/git/ — pinned large repository: `github.com/django/django`
-(deployed with `docker-compose.yml`: Caddy with Let's Encrypt in front of the `v0.2.0` image).
+(deployed with `docker-compose.yml`: Caddy with Let's Encrypt in front of the `v0.2.1` image).
 
 What was built on top of the reference satellite library, how the metrics are
 defined, and where the limits are. Decisions are recorded on the `docs/vault`
