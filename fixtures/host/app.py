@@ -1,0 +1,28 @@
+"""Minimal host application mounting AWG GitPulse under `/git`."""
+
+from __future__ import annotations
+
+import os
+from pathlib import Path
+
+from gitpulse.fastapi_app import create_app
+
+ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_REPO = Path(os.environ.get('GITPULSE_REPO_PATH', str(ROOT)))
+
+
+def build_host_app():
+    app = create_app(
+        mount_path='/git',
+        repo_path=DEFAULT_REPO,
+        mount_ui=True,
+    )
+
+    @app.get('/health')
+    def host_health() -> dict[str, str]:
+        return {'status': 'ok', 'host': 'fixture'}
+
+    return app
+
+
+app = build_host_app()

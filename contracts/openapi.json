@@ -1,0 +1,601 @@
+{
+  "components": {
+    "schemas": {
+      "ActivityBucket": {
+        "description": "Commits aggregated into a time bucket.",
+        "properties": {
+          "commits": {
+            "title": "Commits",
+            "type": "integer"
+          },
+          "period": {
+            "title": "Period",
+            "type": "string"
+          }
+        },
+        "required": [
+          "period",
+          "commits"
+        ],
+        "title": "ActivityBucket",
+        "type": "object"
+      },
+      "Author": {
+        "description": "Canonical author identity after mailmap resolution.",
+        "properties": {
+          "commits": {
+            "default": 0,
+            "title": "Commits",
+            "type": "integer"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "email"
+        ],
+        "title": "Author",
+        "type": "object"
+      },
+      "AuthorContribution": {
+        "description": "Author share of project activity.",
+        "properties": {
+          "commits": {
+            "title": "Commits",
+            "type": "integer"
+          },
+          "deletions": {
+            "default": 0,
+            "title": "Deletions",
+            "type": "integer"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "insertions": {
+            "default": 0,
+            "title": "Insertions",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "share_percent": {
+            "minimum": 0.0,
+            "title": "Share Percent",
+            "type": "number"
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "commits",
+          "share_percent"
+        ],
+        "title": "AuthorContribution",
+        "type": "object"
+      },
+      "BranchRef": {
+        "description": "Local branch tip.",
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "tip_author": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tip Author"
+          },
+          "tip_date": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tip Date"
+          },
+          "tip_sha": {
+            "title": "Tip Sha",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "tip_sha"
+        ],
+        "title": "BranchRef",
+        "type": "object"
+      },
+      "Commit": {
+        "description": "Single commit metadata (no patch body).",
+        "properties": {
+          "author_email": {
+            "title": "Author Email",
+            "type": "string"
+          },
+          "author_name": {
+            "title": "Author Name",
+            "type": "string"
+          },
+          "authored_at": {
+            "format": "date-time",
+            "title": "Authored At",
+            "type": "string"
+          },
+          "sha": {
+            "title": "Sha",
+            "type": "string"
+          },
+          "short_sha": {
+            "title": "Short Sha",
+            "type": "string"
+          },
+          "subject": {
+            "title": "Subject",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sha",
+          "short_sha",
+          "author_name",
+          "author_email",
+          "authored_at",
+          "subject"
+        ],
+        "title": "Commit",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "RepoSummary": {
+        "description": "Repository header shown in the UI.",
+        "properties": {
+          "author_count": {
+            "default": 0,
+            "title": "Author Count",
+            "type": "integer"
+          },
+          "branch_count": {
+            "default": 0,
+            "title": "Branch Count",
+            "type": "integer"
+          },
+          "commit_count": {
+            "default": 0,
+            "title": "Commit Count",
+            "type": "integer"
+          },
+          "default_branch": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Branch"
+          },
+          "first_commit_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Commit At"
+          },
+          "head": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Head"
+          },
+          "last_commit_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Commit At"
+          },
+          "path": {
+            "title": "Path",
+            "type": "string"
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "title": "RepoSummary",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "AWG GitPulse",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/git/api/v1/activity": {
+      "get": {
+        "operationId": "activity_git_api_v1_activity_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "branch",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Branch"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit_commits",
+            "required": false,
+            "schema": {
+              "default": 500,
+              "maximum": 2000,
+              "minimum": 1,
+              "title": "Limit Commits",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ActivityBucket"
+                  },
+                  "title": "Response Activity Git Api V1 Activity Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Activity",
+        "tags": [
+          "gitpulse"
+        ]
+      }
+    },
+    "/git/api/v1/authors": {
+      "get": {
+        "operationId": "authors_git_api_v1_authors_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Author"
+                  },
+                  "title": "Response Authors Git Api V1 Authors Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Authors",
+        "tags": [
+          "gitpulse"
+        ]
+      }
+    },
+    "/git/api/v1/branches": {
+      "get": {
+        "operationId": "branches_git_api_v1_branches_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/BranchRef"
+                  },
+                  "title": "Response Branches Git Api V1 Branches Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Branches",
+        "tags": [
+          "gitpulse"
+        ]
+      }
+    },
+    "/git/api/v1/branches/{branch}/commits": {
+      "get": {
+        "operationId": "commits_git_api_v1_branches__branch__commits_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "branch",
+            "required": true,
+            "schema": {
+              "title": "Branch",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Skip",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Commit"
+                  },
+                  "title": "Response Commits Git Api V1 Branches  Branch  Commits Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Commits",
+        "tags": [
+          "gitpulse"
+        ]
+      }
+    },
+    "/git/api/v1/contributions": {
+      "get": {
+        "operationId": "contributions_git_api_v1_contributions_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "branch",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Branch"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit_commits",
+            "required": false,
+            "schema": {
+              "default": 500,
+              "maximum": 2000,
+              "minimum": 1,
+              "title": "Limit Commits",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AuthorContribution"
+                  },
+                  "title": "Response Contributions Git Api V1 Contributions Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Contributions",
+        "tags": [
+          "gitpulse"
+        ]
+      }
+    },
+    "/git/api/v1/health": {
+      "get": {
+        "operationId": "health_git_api_v1_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Health Git Api V1 Health Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health",
+        "tags": [
+          "gitpulse"
+        ]
+      }
+    },
+    "/git/api/v1/summary": {
+      "get": {
+        "operationId": "summary_git_api_v1_summary_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepoSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Summary",
+        "tags": [
+          "gitpulse"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,89 @@
+[project]
+name = 'awg-gitpulse-test'
+version = '0.1.0'
+description = 'AWG GitPulse: embeddable git analytics module for FastAPI hosts'
+authors = [
+    { name = 'AWG' },
+]
+readme = 'README.md'
+requires-python = '>=3.11,<4.0'
+license = { text = 'MIT' }
+dependencies = [
+    'fastapi>=0.115.0,<1.0.0',
+    'pydantic>=2.8.0,<3.0.0',
+    'pydantic-settings>=2.4.0,<3.0.0',
+    'uvicorn>=0.30.0,<1.0.0',
+]
+
+[dependency-groups]
+dev = [
+    'pytest>=8.3.0,<10.0.0',
+    'pytest-asyncio>=0.24.0,<1.0.0',
+    'ruff>=0.6.0,<1.0.0',
+    'mypy>=1.11.0,<3.0.0',
+    'httpx>=0.27.0,<1.0.0',
+    'import-linter>=2.1,<3.0',
+]
+
+[tool.poetry]
+packages = [
+    { include = 'gitpulse', from = 'src' },
+]
+include = [
+    { path = 'src/gitpulse/static/**/*', format = ['sdist', 'wheel'] },
+]
+
+[build-system]
+requires = ['poetry-core>=2.0.0,<3.0.0']
+build-backend = 'poetry.core.masonry.api'
+
+[tool.ruff]
+line-length = 100
+target-version = 'py311'
+src = ['src', 'tests', 'fixtures']
+
+[tool.ruff.lint]
+select = ['E', 'F', 'I', 'UP', 'B']
+
+[tool.ruff.format]
+quote-style = 'single'
+
+[tool.mypy]
+python_version = '3.11'
+strict = true
+packages = ['gitpulse']
+mypy_path = 'src'
+explicit_package_bases = true
+
+[tool.pytest.ini_options]
+testpaths = ['tests']
+pythonpath = ['src', '.']
+asyncio_mode = 'auto'
+asyncio_default_fixture_loop_scope = 'function'
+
+[tool.importlinter]
+root_packages = ['gitpulse']
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = 'Core stays free of FastAPI and git adapters'
+type = 'forbidden'
+source_modules = ['gitpulse.core']
+forbidden_modules = [
+    'gitpulse.fastapi_app',
+    'gitpulse.git',
+    'fastapi',
+    'uvicorn',
+]
+
+[[tool.importlinter.contracts]]
+name = 'Git adapter stays free of FastAPI'
+type = 'forbidden'
+source_modules = ['gitpulse.git']
+forbidden_modules = ['gitpulse.fastapi_app', 'fastapi', 'uvicorn']
+
+[[tool.importlinter.contracts]]
+name = 'Analytics stays free of FastAPI'
+type = 'forbidden'
+source_modules = ['gitpulse.analytics']
+forbidden_modules = ['gitpulse.fastapi_app', 'fastapi', 'uvicorn']

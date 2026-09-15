@@ -1,0 +1,14 @@
+---
+description: Required DDD context for architecture and behavior changes
+alwaysApply: true
+---
+
+# Vault context
+
+Before architecture, API, data-model, security, or UX work:
+
+1. Open the dedicated `docs/vault` worktree.
+2. Read `GitPulse.md` and the linked ADRs relevant to the files being changed.
+3. If implementation changes a decided boundary, update or supersede the ADR first.
+
+Validate Markdown links, ADR numbering, and `git diff --check` before publishing vault changes.
