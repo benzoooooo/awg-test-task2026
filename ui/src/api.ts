@@ -61,7 +61,8 @@ async function getJson<T>(path: string): Promise<T> {
 export const api = {
   summary: () => getJson<RepoSummary>('/summary'),
   branches: () => getJson<BranchRef[]>('/branches'),
-  commits: (branch: string) => getJson<Commit[]>(`/branches/${encodeURIComponent(branch)}/commits`),
+  commits: (branch: string) =>
+    getJson<Commit[]>(`/commits?branch=${encodeURIComponent(branch)}`),
   authors: () => getJson<Author[]>('/authors'),
   contributions: () => getJson<AuthorContribution[]>('/contributions'),
   activity: () => getJson<ActivityBucket[]>('/activity'),

@@ -39,9 +39,9 @@ def build_api_router(repository: GitRepository, *, api_prefix: str = '/api/v1') 
         except GitPulseError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
-    @router.get('/branches/{branch}/commits', response_model=list[Commit])
+    @router.get('/commits', response_model=list[Commit])
     def commits(
-        branch: str,
+        branch: str = Query(..., min_length=1),
         limit: int = Query(default=50, ge=1, le=200),
         skip: int = Query(default=0, ge=0),
     ) -> list[Commit]:

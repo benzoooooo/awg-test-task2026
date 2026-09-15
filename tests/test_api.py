@@ -24,7 +24,7 @@ def test_summary_and_branches(client: TestClient) -> None:
 
 
 def test_commits_and_authors(client: TestClient) -> None:
-    commits = client.get('/git/api/v1/branches/main/commits')
+    commits = client.get('/git/api/v1/commits', params={'branch': 'main'})
     assert commits.status_code == 200
     assert len(commits.json()) >= 2
     authors = client.get('/git/api/v1/authors')
@@ -33,5 +33,11 @@ def test_commits_and_authors(client: TestClient) -> None:
 
 
 def test_unknown_branch(client: TestClient) -> None:
-    response = client.get('/git/api/v1/branches/does-not-exist/commits')
+    response = client.get('/git/api/v1/commits', params={'branch': 'does-not-exist'})
     assert response.status_code == 404
+
+
+def test_branch_with_slash(client: TestClient) -> None:
+    response = client.get('/git/api/v1/commits', params={'branch': 'feat/sample'})
+    assert response.status_code == 200
+    assert len(response.json()) >= 1

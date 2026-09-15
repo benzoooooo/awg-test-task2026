@@ -417,15 +417,16 @@
         ]
       }
     },
-    "/git/api/v1/branches/{branch}/commits": {
+    "/git/api/v1/commits": {
       "get": {
-        "operationId": "commits_git_api_v1_branches__branch__commits_get",
+        "operationId": "commits_git_api_v1_commits_get",
         "parameters": [
           {
-            "in": "path",
+            "in": "query",
             "name": "branch",
             "required": true,
             "schema": {
+              "minLength": 1,
               "title": "Branch",
               "type": "string"
             }
@@ -462,7 +463,7 @@
                   "items": {
                     "$ref": "#/components/schemas/Commit"
                   },
-                  "title": "Response Commits Git Api V1 Branches  Branch  Commits Get",
+                  "title": "Response Commits Git Api V1 Commits Get",
                   "type": "array"
                 }
               }
