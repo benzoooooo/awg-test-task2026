@@ -30,6 +30,18 @@ Before planning or editing, read and apply every applicable rule in
 - Use Conventional Commits and single quotes where the formatter allows.
 - Imports stay at file top — never inside functions or conditionals.
 
+## Remote repositories and analytics
+
+- Every clone or fetch goes through `gitpulse.git.remote` (`parse_remote_url`,
+  `HARDENED_CONFIG`, `run_bounded`). Never build networked git argv elsewhere.
+- Git reads on clones use `OFFLINE_CLONE_ENV`; a read path must never fetch objects.
+- Analytics read from `IndexCache`; never scan full history per request.
+- Metric definitions live in vault ADR 0004, `docs/delivery.md`, and
+  `ui/src/components/MetricsHelp.tsx`; change all three together.
+- After UI changes run `make ui-package` and commit `src/gitpulse/static`.
+- `GITPULSE_BLOCK_PRIVATE_NETWORKS=false` is for local development behind fake-IP DNS
+  only; never set it in deploy configuration.
+
 ## Human responsibilities (do not silently take over)
 
 - Product priorities and trade-offs

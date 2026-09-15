@@ -1,4 +1,4 @@
-.PHONY: install lint format typecheck test contracts ui-install ui-lint ui-typecheck ui-test ui-build ui-package package package-verify ci-check timelog-start timelog-dod privacy-check
+.PHONY: docker-build install lint format typecheck test contracts ui-install ui-lint ui-typecheck ui-test ui-build ui-package package package-verify ci-check timelog-start timelog-dod privacy-check
 
 POETRY ?= poetry
 PNPM ?= pnpm
@@ -13,13 +13,13 @@ ui-install:
 	cd ui && $(PNPM) install
 
 lint:
-	$(POETRY) run ruff check src tests fixtures scripts
-	$(POETRY) run ruff format --check src tests fixtures scripts
+	$(POETRY) run ruff check src tests fixtures scripts deploy
+	$(POETRY) run ruff format --check src tests fixtures scripts deploy
 	$(MAKE) ui-lint
 
 format:
-	$(POETRY) run ruff check --fix src tests fixtures scripts
-	$(POETRY) run ruff format src tests fixtures scripts
+	$(POETRY) run ruff check --fix src tests fixtures scripts deploy
+	$(POETRY) run ruff format src tests fixtures scripts deploy
 
 typecheck:
 	$(POETRY) run mypy
@@ -69,3 +69,6 @@ timelog-dod:
 	@ts=$$(date -u +'%Y-%m-%dT%H:%M:%SZ'); \
 	printf '| dod_submitted | %s |\n' "$$ts" >> TIMELOG.md; \
 	echo "recorded dod_submitted at $$ts"
+
+docker-build:
+	docker build -t awg-gitpulse:$$($(POETRY) version -s) .
