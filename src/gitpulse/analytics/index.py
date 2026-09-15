@@ -124,12 +124,15 @@ class IndexCache:
                 hit = self._entries.get(key)
                 if hit is not None:
                     return hit
-            index = build_index(repo, branch, tip, max_commits=self._max_commits)
+            try:
+                index = build_index(repo, branch, tip, max_commits=self._max_commits)
+            finally:
+                with self._lock:
+                    self._building.pop(key, None)
             with self._lock:
                 for stale in [k for k in self._entries if k[:2] == key[:2]]:
                     del self._entries[stale]
                 self._entries[key] = index
                 while len(self._entries) > self._max_entries:
                     self._entries.popitem(last=False)
-                self._building.pop(key, None)
         return index
