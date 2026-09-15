@@ -1,5 +1,5 @@
-# source: mazazyrik/awg-test-task2026 @ v0.1.0
+# source: benzoooooo/awg-test-task2026 @ v0.2.0
 # Replace the wheel filename after each package release.
-./vendor/awg_gitpulse_test-0.1.0-py3-none-any.whl
+./vendor/awg_gitpulse_test-0.2.0-py3-none-any.whl
 fastapi>=0.115.0,<1.0.0
 uvicorn>=0.30.0,<1.0.0

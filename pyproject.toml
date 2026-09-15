@@ -1,6 +1,6 @@
 [project]
 name = 'awg-gitpulse-test'
-version = '0.1.0'
+version = '0.2.0'
 description = 'AWG GitPulse: embeddable git analytics module for FastAPI hosts'
 authors = [
     { name = 'AWG' },

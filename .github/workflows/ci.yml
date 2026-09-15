@@ -1,0 +1,101 @@
+name: ci
+
+on:
+  push:
+    branches: [dev, main]
+  pull_request:
+    branches: [dev, main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: lint, types, tests, contracts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Poetry
+        run: pipx install 'poetry>=2,<3'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+          cache-dependency-path: ui/pnpm-lock.yaml
+      - run: make install
+      - run: make ci-check
+      - name: OpenAPI contract is committed
+        run: git diff --exit-code contracts/openapi.json
+
+  image:
+    name: docker image smoke test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: awg-gitpulse:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Start container
+        run: |
+          docker run -d --name gitpulse -p 8000:8000 awg-gitpulse:ci
+          for _ in $(seq 1 30); do curl -fsS http://127.0.0.1:8000/health && exit 0; sleep 2; done
+          exit 1
+      - name: UI and API respond
+        run: |
+          curl -fsS http://127.0.0.1:8000/git/ | grep -q 'id="root"'
+          curl -fsS http://127.0.0.1:8000/git/api/v1/config | grep -q '"remote_enabled":true'
+      - name: Clone a public repository and build the dashboard
+        run: |
+          id=$(curl -fsS -X POST http://127.0.0.1:8000/git/api/v1/repos \
+            -H 'Content-Type: application/json' \
+            -d '{"url":"https://github.com/pallets/itsdangerous"}' | jq -r .id)
+          for _ in $(seq 1 90); do
+            status=$(curl -fsS "http://127.0.0.1:8000/git/api/v1/repos/$id" | jq -r .status)
+            [ "$status" = ready ] && break
+            [ "$status" = failed ] && exit 1
+            sleep 2
+          done
+          test "$status" = ready
+          curl -fsS "http://127.0.0.1:8000/git/api/v1/repos/$id/dashboard" | jq -e '.total_commits > 0 and .author_count > 0'
+      - name: Unsafe URL is rejected
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST http://127.0.0.1:8000/git/api/v1/repos \
+            -H 'Content-Type: application/json' -d '{"url":"https://127.0.0.1/a/b"}')
+          test "$code" = 422
+      - name: Container logs
+        if: always()
+        run: docker logs gitpulse || true
+
+  deploy-config:
+    name: compose and caddy config
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      GITPULSE_DOMAIN: gitpulse.example.com
+      ACME_EMAIL: ops@example.com
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compose file resolves
+        run: docker compose config --quiet
+      - name: Caddyfile is valid
+        run: |
+          docker run --rm -e GITPULSE_DOMAIN -e ACME_EMAIL \
+            -v "$PWD/deploy/Caddyfile:/etc/caddy/Caddyfile:ro" \
+            caddy:2.10-alpine caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile

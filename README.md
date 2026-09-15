@@ -48,6 +48,13 @@ If you have hosting — use it. If not — write [@mazazyrikbeats](https://t.me/
 | Agent harness | Useful `AGENTS.md` / rules; human vs agent split respected |
 | Delivery | Live URL + large repo demo |
 
+## Delivery (v0.2.0)
+
+This fork implements the assignment: public URL cloning with a hardened git adapter,
+an author filter, and a contribution dashboard (share, core contributors, trend,
+activity by hour). Details, metric definitions, configuration, API, and known limits:
+**[docs/delivery.md](docs/delivery.md)**. Decisions: `docs/vault` ADR 0003 and 0004.
+
 ## Human vs agent
 
 Read both:
