@@ -9,9 +9,10 @@ from pathlib import Path
 import pytest
 from tests.conftest import commit_as
 
+import gitpulse.analytics.index as index_module
 from gitpulse.analytics import IndexCache, build_dashboard
 from gitpulse.analytics.metrics import select_commit_shas
-from gitpulse.git.errors import UnknownAuthorError
+from gitpulse.git.errors import GitCommandError, UnknownAuthorError
 from gitpulse.git.repository import GitRepository
 
 NOW = datetime(2026, 3, 10, 12, 0, tzinfo=UTC)
@@ -154,3 +155,24 @@ def test_bare_blobless_clone_keeps_mailmap(history_repo: Path, tmp_path: Path) -
     )
     index = IndexCache().get(GitRepository(bare), 'main')
     assert sorted(index.author_names) == ['Ada Lovelace', 'Bob Builder']
+
+
+def test_failed_build_is_retried(history_repo: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    repo = GitRepository(history_repo)
+    cache = IndexCache()
+    real_build = index_module.build_index
+    calls = 0
+
+    def flaky_build(*args: object, **kwargs: object):  # type: ignore[no-untyped-def]
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            raise GitCommandError('git timed out')
+        return real_build(*args, **kwargs)  # type: ignore[arg-type]
+
+    monkeypatch.setattr(index_module, 'build_index', flaky_build)
+    with pytest.raises(GitCommandError):
+        cache.get(repo, 'main')
+    assert not cache._building
+    assert len(cache.get(repo, 'main')) == 6
+    assert calls == 2

@@ -108,6 +108,7 @@ def stream_git(
     with tempfile.TemporaryFile() as stderr:
         proc = subprocess.Popen(
             _git_argv(repo, args),
+            stdin=subprocess.DEVNULL,
             stdout=subprocess.PIPE,
             stderr=stderr,
             env=git_env(env),
