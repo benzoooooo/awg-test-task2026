@@ -3,7 +3,7 @@
 services:
   gitpulse:
     build: .
-    image: awg-gitpulse:0.2.0
+    image: awg-gitpulse:0.2.1
     restart: unless-stopped
     expose:
       - '8000'

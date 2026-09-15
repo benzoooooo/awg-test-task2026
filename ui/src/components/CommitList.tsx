@@ -20,7 +20,8 @@ export function CommitList({ commits, loading, exhausted, error, repoUrl, select
       <ol className="commit-list">
         {commits.map((commit) => {
           const href = commitUrl(repoUrl, commit.sha)
-          const isSelected = selectedAuthor.toLowerCase() === commit.author_email.toLowerCase()
+          const filterable = Boolean(commit.author_email)
+          const isSelected = Boolean(selectedAuthor) && selectedAuthor.toLowerCase() === commit.author_email.toLowerCase()
           return (
             <li key={commit.sha}>
               {href ? (
@@ -32,7 +33,7 @@ export function CommitList({ commits, loading, exhausted, error, repoUrl, select
               )}
               <span className="commit-subject">{commit.subject}</span>
               <span className="commit-meta">
-                {isSelected ? (
+                {isSelected || !filterable ? (
                   <span>{commit.author_name}</span>
                 ) : (
                   <button type="button" className="link-button" onClick={() => onAuthor(commit.author_email)}>

@@ -48,7 +48,9 @@ If you have hosting — use it. If not — write [@mazazyrikbeats](https://t.me/
 | Agent harness | Useful `AGENTS.md` / rules; human vs agent split respected |
 | Delivery | Live URL + large repo demo |
 
-## Delivery (v0.2.0)
+## Delivery (v0.2.1)
+
+**Live:** https://gitpulse.ddns.net/git/ (large repository: `django/django`).
 
 This fork implements the assignment: public URL cloning with a hardened git adapter,
 an author filter, and a contribution dashboard (share, core contributors, trend,

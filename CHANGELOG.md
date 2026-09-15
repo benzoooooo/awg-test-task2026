@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented in this file.
 
+## [0.2.1] — 2026-09-15
+
+### Fixed
+
+- UI: authors whose commits have no e-mail looked selected without an author filter
+  and could not be filtered; they are now shown as non-filterable rows
+
+### Documentation
+
+- Live deployment link and `dod_submitted` in `TIMELOG.md`
+
 ## [0.2.0] — 2026-09-15
 
 ### Added

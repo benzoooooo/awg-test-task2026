@@ -42,7 +42,8 @@ export function AuthorFilter({ authors, value, onChange }: Props) {
     if (match.email.toLowerCase() !== value.toLowerCase()) onChange(match.email)
   }
 
-  const selected = authors.find((author) => author.email.toLowerCase() === value.toLowerCase())
+  // Some histories contain commits without an e-mail; an empty filter must not match them.
+  const selected = value ? authors.find((author) => author.email.toLowerCase() === value.toLowerCase()) : undefined
 
   return (
     <div className="field field-author">
@@ -59,9 +60,8 @@ export function AuthorFilter({ authors, value, onChange }: Props) {
           placeholder={authors.length ? `All ${formatCount(authors.length)} authors` : 'All authors'}
           onChange={(event) => {
             setText(event.target.value)
-            const exact = authors.find(
-              (author) => author.email.toLowerCase() === event.target.value.trim().toLowerCase(),
-            )
+            const query = event.target.value.trim().toLowerCase()
+            const exact = query ? authors.find((author) => author.email.toLowerCase() === query) : undefined
             if (exact) apply(exact.email)
           }}
           onKeyDown={(event) => {
