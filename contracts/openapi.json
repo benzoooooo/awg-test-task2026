@@ -84,6 +84,81 @@
         "title": "AuthorContribution",
         "type": "object"
       },
+      "AuthorProfile": {
+        "description": "Activity of one author inside the analyzed window.",
+        "properties": {
+          "active_periods": {
+            "title": "Active Periods",
+            "type": "integer"
+          },
+          "commits": {
+            "title": "Commits",
+            "type": "integer"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "first_commit_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Commit At"
+          },
+          "last_commit_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Commit At"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "rank": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rank"
+          },
+          "share_percent": {
+            "minimum": 0.0,
+            "title": "Share Percent",
+            "type": "number"
+          },
+          "total_periods": {
+            "title": "Total Periods",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "commits",
+          "share_percent",
+          "active_periods",
+          "total_periods"
+        ],
+        "title": "AuthorProfile",
+        "type": "object"
+      },
       "BranchRef": {
         "description": "Local branch tip.",
         "properties": {
@@ -166,6 +241,164 @@
         "title": "Commit",
         "type": "object"
       },
+      "ConnectRepoRequest": {
+        "properties": {
+          "url": {
+            "examples": [
+              "https://github.com/fastapi/fastapi"
+            ],
+            "maxLength": 2048,
+            "minLength": 1,
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "title": "ConnectRepoRequest",
+        "type": "object"
+      },
+      "Dashboard": {
+        "description": "Everything the contribution dashboard renders for one branch and window.",
+        "properties": {
+          "author": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Author"
+          },
+          "author_count": {
+            "title": "Author Count",
+            "type": "integer"
+          },
+          "branch": {
+            "title": "Branch",
+            "type": "string"
+          },
+          "contributors": {
+            "items": {
+              "$ref": "#/components/schemas/AuthorContribution"
+            },
+            "title": "Contributors",
+            "type": "array"
+          },
+          "core_authors": {
+            "title": "Core Authors",
+            "type": "integer"
+          },
+          "first_commit_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Commit At"
+          },
+          "last_commit_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Commit At"
+          },
+          "other_authors": {
+            "title": "Other Authors",
+            "type": "integer"
+          },
+          "other_commits": {
+            "title": "Other Commits",
+            "type": "integer"
+          },
+          "other_share_percent": {
+            "minimum": 0.0,
+            "title": "Other Share Percent",
+            "type": "number"
+          },
+          "punchcard": {
+            "items": {
+              "items": {
+                "type": "integer"
+              },
+              "type": "array"
+            },
+            "title": "Punchcard",
+            "type": "array"
+          },
+          "scanned_commits": {
+            "title": "Scanned Commits",
+            "type": "integer"
+          },
+          "selected_author": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AuthorProfile"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "since": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Since"
+          },
+          "tip_sha": {
+            "title": "Tip Sha",
+            "type": "string"
+          },
+          "total_commits": {
+            "title": "Total Commits",
+            "type": "integer"
+          },
+          "trend": {
+            "$ref": "#/components/schemas/Trend"
+          },
+          "truncated": {
+            "title": "Truncated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "branch",
+          "tip_sha",
+          "total_commits",
+          "author_count",
+          "core_authors",
+          "scanned_commits",
+          "truncated",
+          "contributors",
+          "other_authors",
+          "other_commits",
+          "other_share_percent",
+          "trend",
+          "punchcard"
+        ],
+        "title": "Dashboard",
+        "type": "object"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -178,6 +411,120 @@
         },
         "title": "HTTPValidationError",
         "type": "object"
+      },
+      "RepoInfo": {
+        "description": "Registered repository and its clone / refresh state.",
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "fetched_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fetched At"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "pinned": {
+            "default": false,
+            "title": "Pinned",
+            "type": "boolean"
+          },
+          "refreshing": {
+            "default": false,
+            "title": "Refreshing",
+            "type": "boolean"
+          },
+          "size_bytes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Size Bytes"
+          },
+          "source": {
+            "$ref": "#/components/schemas/RepoSource"
+          },
+          "status": {
+            "$ref": "#/components/schemas/RepoStatus"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "source",
+          "status",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "RepoInfo",
+        "type": "object"
+      },
+      "RepoSource": {
+        "description": "Where an analyzable repository comes from.",
+        "enum": [
+          "local",
+          "remote"
+        ],
+        "title": "RepoSource",
+        "type": "string"
+      },
+      "RepoStatus": {
+        "description": "Lifecycle of a registered repository.",
+        "enum": [
+          "pending",
+          "cloning",
+          "ready",
+          "failed"
+        ],
+        "title": "RepoStatus",
+        "type": "string"
       },
       "RepoSummary": {
         "description": "Repository header shown in the UI.",
@@ -252,6 +599,114 @@
           "path"
         ],
         "title": "RepoSummary",
+        "type": "object"
+      },
+      "ServiceConfig": {
+        "properties": {
+          "allowed_hosts": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Allowed Hosts",
+            "type": "array"
+          },
+          "max_commits_scan": {
+            "title": "Max Commits Scan",
+            "type": "integer"
+          },
+          "max_repo_size_mb": {
+            "title": "Max Repo Size Mb",
+            "type": "integer"
+          },
+          "max_repos": {
+            "title": "Max Repos",
+            "type": "integer"
+          },
+          "remote_enabled": {
+            "title": "Remote Enabled",
+            "type": "boolean"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "version",
+          "remote_enabled",
+          "allowed_hosts",
+          "max_repos",
+          "max_repo_size_mb",
+          "max_commits_scan"
+        ],
+        "title": "ServiceConfig",
+        "type": "object"
+      },
+      "Trend": {
+        "description": "Continuous activity series; empty periods are included as zeros.",
+        "properties": {
+          "buckets": {
+            "items": {
+              "$ref": "#/components/schemas/TrendBucket"
+            },
+            "title": "Buckets",
+            "type": "array"
+          },
+          "granularity": {
+            "enum": [
+              "week",
+              "month"
+            ],
+            "title": "Granularity",
+            "type": "string"
+          }
+        },
+        "required": [
+          "granularity",
+          "buckets"
+        ],
+        "title": "Trend",
+        "type": "object"
+      },
+      "TrendBucket": {
+        "description": "Commits in one calendar week or month (UTC, by author date).",
+        "properties": {
+          "active_authors": {
+            "title": "Active Authors",
+            "type": "integer"
+          },
+          "author_commits": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Author Commits"
+          },
+          "commits": {
+            "title": "Commits",
+            "type": "integer"
+          },
+          "period": {
+            "title": "Period",
+            "type": "string"
+          },
+          "start": {
+            "format": "date",
+            "title": "Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "period",
+          "start",
+          "commits",
+          "active_authors"
+        ],
+        "title": "TrendBucket",
         "type": "object"
       },
       "ValidationError": {
@@ -333,6 +788,41 @@
               "title": "Limit Commits",
               "type": "integer"
             }
+          },
+          {
+            "in": "query",
+            "name": "since",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Since"
+            }
+          },
+          {
+            "in": "query",
+            "name": "author",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 320,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Author"
+            }
           }
         ],
         "responses": {
@@ -370,6 +860,42 @@
     "/git/api/v1/authors": {
       "get": {
         "operationId": "authors_git_api_v1_authors_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "branch",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Branch"
+            }
+          },
+          {
+            "in": "query",
+            "name": "since",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Since"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -384,6 +910,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Authors",
@@ -453,6 +989,41 @@
               "title": "Skip",
               "type": "integer"
             }
+          },
+          {
+            "in": "query",
+            "name": "author",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 320,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Author"
+            }
+          },
+          {
+            "in": "query",
+            "name": "since",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Since"
+            }
           }
         ],
         "responses": {
@@ -482,6 +1053,27 @@
           }
         },
         "summary": "Commits",
+        "tags": [
+          "gitpulse"
+        ]
+      }
+    },
+    "/git/api/v1/config": {
+      "get": {
+        "operationId": "service_config_git_api_v1_config_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceConfig"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Service Config",
         "tags": [
           "gitpulse"
         ]
@@ -518,6 +1110,23 @@
               "title": "Limit Commits",
               "type": "integer"
             }
+          },
+          {
+            "in": "query",
+            "name": "since",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Since"
+            }
           }
         ],
         "responses": {
@@ -552,6 +1161,118 @@
         ]
       }
     },
+    "/git/api/v1/dashboard": {
+      "get": {
+        "operationId": "dashboard_git_api_v1_dashboard_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "branch",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Branch"
+            }
+          },
+          {
+            "in": "query",
+            "name": "since",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Since"
+            }
+          },
+          {
+            "in": "query",
+            "name": "author",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 320,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Author"
+            }
+          },
+          {
+            "in": "query",
+            "name": "granularity",
+            "required": false,
+            "schema": {
+              "default": "auto",
+              "enum": [
+                "auto",
+                "week",
+                "month"
+              ],
+              "title": "Granularity",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "top",
+            "required": false,
+            "schema": {
+              "default": 12,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Top",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Dashboard"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Dashboard",
+        "tags": [
+          "gitpulse"
+        ]
+      }
+    },
     "/git/api/v1/health": {
       "get": {
         "operationId": "health_git_api_v1_health_get",
@@ -572,6 +1293,766 @@
           }
         },
         "summary": "Health",
+        "tags": [
+          "gitpulse"
+        ]
+      }
+    },
+    "/git/api/v1/repos": {
+      "get": {
+        "operationId": "list_repos_git_api_v1_repos_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RepoInfo"
+                  },
+                  "title": "Response List Repos Git Api V1 Repos Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Repos",
+        "tags": [
+          "gitpulse"
+        ]
+      },
+      "post": {
+        "operationId": "connect_repo_git_api_v1_repos_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConnectRepoRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepoInfo"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Connect Repo",
+        "tags": [
+          "gitpulse"
+        ]
+      }
+    },
+    "/git/api/v1/repos/{repo_id}": {
+      "get": {
+        "operationId": "get_repo_git_api_v1_repos__repo_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "repo_id",
+            "required": true,
+            "schema": {
+              "pattern": "^(local|[0-9a-f]{16})$",
+              "title": "Repo Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepoInfo"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Repo",
+        "tags": [
+          "gitpulse"
+        ]
+      }
+    },
+    "/git/api/v1/repos/{repo_id}/activity": {
+      "get": {
+        "operationId": "activity_git_api_v1_repos__repo_id__activity_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "repo_id",
+            "required": true,
+            "schema": {
+              "pattern": "^(local|[0-9a-f]{16})$",
+              "title": "Repo Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "branch",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Branch"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit_commits",
+            "required": false,
+            "schema": {
+              "default": 500,
+              "maximum": 2000,
+              "minimum": 1,
+              "title": "Limit Commits",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "since",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Since"
+            }
+          },
+          {
+            "in": "query",
+            "name": "author",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 320,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Author"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ActivityBucket"
+                  },
+                  "title": "Response Activity Git Api V1 Repos  Repo Id  Activity Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Activity",
+        "tags": [
+          "gitpulse"
+        ]
+      }
+    },
+    "/git/api/v1/repos/{repo_id}/authors": {
+      "get": {
+        "operationId": "authors_git_api_v1_repos__repo_id__authors_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "repo_id",
+            "required": true,
+            "schema": {
+              "pattern": "^(local|[0-9a-f]{16})$",
+              "title": "Repo Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "branch",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Branch"
+            }
+          },
+          {
+            "in": "query",
+            "name": "since",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Since"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Author"
+                  },
+                  "title": "Response Authors Git Api V1 Repos  Repo Id  Authors Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Authors",
+        "tags": [
+          "gitpulse"
+        ]
+      }
+    },
+    "/git/api/v1/repos/{repo_id}/branches": {
+      "get": {
+        "operationId": "branches_git_api_v1_repos__repo_id__branches_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "repo_id",
+            "required": true,
+            "schema": {
+              "pattern": "^(local|[0-9a-f]{16})$",
+              "title": "Repo Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/BranchRef"
+                  },
+                  "title": "Response Branches Git Api V1 Repos  Repo Id  Branches Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Branches",
+        "tags": [
+          "gitpulse"
+        ]
+      }
+    },
+    "/git/api/v1/repos/{repo_id}/commits": {
+      "get": {
+        "operationId": "commits_git_api_v1_repos__repo_id__commits_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "repo_id",
+            "required": true,
+            "schema": {
+              "pattern": "^(local|[0-9a-f]{16})$",
+              "title": "Repo Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "branch",
+            "required": true,
+            "schema": {
+              "minLength": 1,
+              "title": "Branch",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Skip",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "author",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 320,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Author"
+            }
+          },
+          {
+            "in": "query",
+            "name": "since",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Since"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Commit"
+                  },
+                  "title": "Response Commits Git Api V1 Repos  Repo Id  Commits Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Commits",
+        "tags": [
+          "gitpulse"
+        ]
+      }
+    },
+    "/git/api/v1/repos/{repo_id}/contributions": {
+      "get": {
+        "operationId": "contributions_git_api_v1_repos__repo_id__contributions_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "repo_id",
+            "required": true,
+            "schema": {
+              "pattern": "^(local|[0-9a-f]{16})$",
+              "title": "Repo Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "branch",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Branch"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit_commits",
+            "required": false,
+            "schema": {
+              "default": 500,
+              "maximum": 2000,
+              "minimum": 1,
+              "title": "Limit Commits",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "since",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Since"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AuthorContribution"
+                  },
+                  "title": "Response Contributions Git Api V1 Repos  Repo Id  Contributions Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Contributions",
+        "tags": [
+          "gitpulse"
+        ]
+      }
+    },
+    "/git/api/v1/repos/{repo_id}/dashboard": {
+      "get": {
+        "operationId": "dashboard_git_api_v1_repos__repo_id__dashboard_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "repo_id",
+            "required": true,
+            "schema": {
+              "pattern": "^(local|[0-9a-f]{16})$",
+              "title": "Repo Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "branch",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Branch"
+            }
+          },
+          {
+            "in": "query",
+            "name": "since",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Since"
+            }
+          },
+          {
+            "in": "query",
+            "name": "author",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 320,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Author"
+            }
+          },
+          {
+            "in": "query",
+            "name": "granularity",
+            "required": false,
+            "schema": {
+              "default": "auto",
+              "enum": [
+                "auto",
+                "week",
+                "month"
+              ],
+              "title": "Granularity",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "top",
+            "required": false,
+            "schema": {
+              "default": 12,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Top",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Dashboard"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Dashboard",
+        "tags": [
+          "gitpulse"
+        ]
+      }
+    },
+    "/git/api/v1/repos/{repo_id}/refresh": {
+      "post": {
+        "operationId": "refresh_repo_git_api_v1_repos__repo_id__refresh_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "repo_id",
+            "required": true,
+            "schema": {
+              "pattern": "^(local|[0-9a-f]{16})$",
+              "title": "Repo Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepoInfo"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Refresh Repo",
+        "tags": [
+          "gitpulse"
+        ]
+      }
+    },
+    "/git/api/v1/repos/{repo_id}/summary": {
+      "get": {
+        "operationId": "summary_git_api_v1_repos__repo_id__summary_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "repo_id",
+            "required": true,
+            "schema": {
+              "pattern": "^(local|[0-9a-f]{16})$",
+              "title": "Repo Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepoSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Summary",
         "tags": [
           "gitpulse"
         ]

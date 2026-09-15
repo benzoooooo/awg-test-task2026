@@ -1,12 +1,29 @@
-"""Simplify contribution calculation."""
+"""Contribution and activity analytics over mailmap-resolved commit metadata."""
 
 from __future__ import annotations
 
-from collections import defaultdict
-from datetime import datetime
+from datetime import date
 
+from gitpulse.analytics.index import CommitIndex, IndexCache, build_index
+from gitpulse.analytics.metrics import (
+    build_dashboard,
+    contributions_for,
+    select_rows,
+    weekly_activity,
+)
 from gitpulse.core.models import ActivityBucket, AuthorContribution
 from gitpulse.git.repository import GitRepository
+
+_DEFAULT_CACHE = IndexCache()
+
+__all__ = [
+    'CommitIndex',
+    'IndexCache',
+    'activity_by_week',
+    'author_contributions',
+    'build_dashboard',
+    'build_index',
+]
 
 
 def author_contributions(
@@ -14,39 +31,17 @@ def author_contributions(
     *,
     branch: str | None = None,
     limit_commits: int = 500,
+    since: date | None = None,
+    cache: IndexCache | None = None,
 ) -> list[AuthorContribution]:
-    """Estimate contribution share from commit counts (mailmap-aware).
+    """Commit-count share over the newest `limit_commits` commits of a branch (mailmap-aware).
 
-    Full `--numstat` line accounting is left to candidates extending the module.
-    The reference uses commit counts for a fast, bounded baseline.
+    Line-based accounting needs file contents, which blobless clones do not keep;
+    commit counts are the documented baseline (see ADR 0002 / 0004).
     """
 
-    if branch is None:
-        authors = repo.list_authors()
-        total = sum(a.commits for a in authors) or 1
-        return [
-            AuthorContribution(
-                name=a.name,
-                email=a.email,
-                commits=a.commits,
-                share_percent=round(100.0 * a.commits / total, 2),
-            )
-            for a in authors
-        ]
-
-    counts: dict[tuple[str, str], int] = defaultdict(int)
-    for commit in repo.list_commits(branch, limit=limit_commits):
-        counts[(commit.author_name, commit.author_email)] += 1
-    total = sum(counts.values()) or 1
-    return [
-        AuthorContribution(
-            name=name,
-            email=email,
-            commits=count,
-            share_percent=round(100.0 * count / total, 2),
-        )
-        for (name, email), count in sorted(counts.items(), key=lambda item: (-item[1], item[0][0]))
-    ]
+    index = (cache or _DEFAULT_CACHE).get(repo, branch or repo.head_branch())
+    return contributions_for(index, select_rows(index, since=since, limit=limit_commits))
 
 
 def activity_by_week(
@@ -54,20 +49,13 @@ def activity_by_week(
     *,
     branch: str | None = None,
     limit_commits: int = 500,
+    since: date | None = None,
+    author: str | None = None,
+    cache: IndexCache | None = None,
 ) -> list[ActivityBucket]:
-    """Bucket recent commits by ISO week."""
+    """Bucket the newest `limit_commits` commits by ISO week, optionally for one author."""
 
-    head = repo.summary().head or 'main'
-    ref = branch or head
-    buckets: dict[str, int] = defaultdict(int)
-    for commit in repo.list_commits(ref, limit=limit_commits):
-        week = _iso_week(commit.authored_at)
-        buckets[week] += 1
-    return [
-        ActivityBucket(period=period, commits=count) for period, count in sorted(buckets.items())
-    ]
-
-
-def _iso_week(value: datetime) -> str:
-    year, week, _ = value.isocalendar()
-    return f'{year}-W{week:02d}'
+    index = (cache or _DEFAULT_CACHE).get(repo, branch or repo.head_branch())
+    author_id = index.find_author(author) if author else None
+    rows = select_rows(index, since=since, author_id=author_id, limit=limit_commits)
+    return weekly_activity(index, rows)
